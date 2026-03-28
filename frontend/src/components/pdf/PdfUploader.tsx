@@ -3,6 +3,7 @@ import { useRef } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useI18n } from "@/lib/i18n";
 
 type PdfUploaderProps = {
   loading: boolean;
@@ -11,13 +12,14 @@ type PdfUploaderProps = {
 
 export function PdfUploader({ loading, onUpload }: PdfUploaderProps) {
   const fileRef = useRef<HTMLInputElement | null>(null);
+  const { t } = useI18n();
 
   return (
     <Card className="p-5">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-text">Upload PDF</h2>
-          <p className="text-sm text-slate-600">Only digital text PDFs are supported. No OCR in MVP.</p>
+          <h2 className="text-lg font-semibold text-text">{t("upload.title")}</h2>
+          <p className="text-sm text-slate-600">{t("upload.subtitle")}</p>
         </div>
         <div className="flex gap-2">
           <input
@@ -34,7 +36,7 @@ export function PdfUploader({ loading, onUpload }: PdfUploaderProps) {
             }}
           />
           <Button variant="secondary" onClick={() => fileRef.current?.click()} disabled={loading}>
-            {loading ? "Uploading..." : "Select PDF"}
+            {loading ? t("upload.loading") : t("upload.select")}
           </Button>
         </div>
       </div>

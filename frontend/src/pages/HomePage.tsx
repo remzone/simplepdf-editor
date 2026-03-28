@@ -4,7 +4,9 @@ import { useState } from "react";
 import { BlockEditor } from "@/components/pdf/BlockEditor";
 import { PdfUploader } from "@/components/pdf/PdfUploader";
 import { PdfViewer } from "@/components/pdf/PdfViewer";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useI18n } from "@/lib/i18n";
 import { applyChange, deleteBlock, fetchBlocks, getDownloadUrl, getPreviewUrl, uploadPdf } from "@/lib/api";
 import type { BlockRect, BlocksResponse, EditorDraft, TextBlock } from "@/types/pdf";
 
@@ -45,6 +47,7 @@ export function HomePage() {
   const [saving, setSaving] = useState(false);
   const [warnings, setWarnings] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const { t, locale, setLocale } = useI18n();
 
   async function refreshBlocks(docId: string) {
     const data = await fetchBlocks(docId);
@@ -65,8 +68,8 @@ export function HomePage() {
       setDocumentId(result.document_id);
       await refreshBlocks(result.document_id);
       setPreviewVersion((prev) => prev + 1);
-    } catch (uploadError) {
-      setError(uploadError instanceof Error ? uploadError.message : "Upload failed");
+    } catch {
+      setError(t("error.upload"));
     } finally {
       setUploading(false);
     }
@@ -99,8 +102,8 @@ export function HomePage() {
       setDraftRect(null);
       setDraft(null);
       setDraftTextFromCanvas(null);
-    } catch (applyError) {
-      setError(applyError instanceof Error ? applyError.message : "Unable to apply changes");
+    } catch {
+      setError(t("error.apply"));
     } finally {
       setSaving(false);
     }
@@ -131,8 +134,8 @@ export function HomePage() {
       setDraftRect(null);
       setDraft(null);
       setDraftTextFromCanvas(null);
-    } catch (deleteError) {
-      setError(deleteError instanceof Error ? deleteError.message : "Unable to delete block");
+    } catch {
+      setError(t("error.delete"));
     } finally {
       setSaving(false);
     }
@@ -209,8 +212,17 @@ export function HomePage() {
       <div className="relative mx-auto flex w-full max-w-[1500px] flex-col gap-4">
         <header className="flex items-center justify-between rounded-2xl border border-white/35 bg-panel px-5 py-4 shadow-glass backdrop-blur-glass">
           <div>
-            <h1 className="text-2xl font-bold text-text">Light PDF Text Editor</h1>
-            <p className="text-sm text-slate-600">Fast text replacement for digital PDFs: invoices, forms, and receipts.</p>
+            <h1 className="text-2xl font-bold text-text">{t("header.title")}</h1>
+            <p className="text-sm text-slate-600">{t("header.subtitle")}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-slate-500">{t("header.lang")}</span>
+            <Button variant={locale === "en" ? "default" : "secondary"} size="sm" onClick={() => setLocale("en")}>
+              EN
+            </Button>
+            <Button variant={locale === "ru" ? "default" : "secondary"} size="sm" onClick={() => setLocale("ru")}>
+              RU
+            </Button>
           </div>
         </header>
 
@@ -233,9 +245,7 @@ export function HomePage() {
               onDraftTextChange={handleDraftTextChange}
             />
           ) : (
-            <Card className="flex h-[calc(100vh-220px)] items-center justify-center p-5 text-slate-600">
-              Upload PDF to start editing text blocks.
-            </Card>
+            <Card className="flex h-[calc(100vh-220px)] items-center justify-center p-5 text-slate-600">{t("home.uploadPrompt")}</Card>
           )}
 
           <BlockEditor

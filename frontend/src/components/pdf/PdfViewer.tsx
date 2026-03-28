@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 
 import { Card } from "@/components/ui/card";
+import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import type { BlockRect, EditorDraft, PageLayout, TextBlock } from "@/types/pdf";
 
@@ -62,6 +63,7 @@ export function PdfViewer({
 }: PdfViewerProps) {
   const [pageCount, setPageCount] = useState(0);
   const [drag, setDrag] = useState<DragState | null>(null);
+  const { t } = useI18n();
 
   useEffect(() => {
     if (!drag) {
@@ -136,7 +138,7 @@ export function PdfViewer({
 
   return (
     <Card className="h-[calc(100vh-220px)] overflow-auto p-4">
-      <Document key={fileUrl} file={fileUrl} onLoadSuccess={(doc) => setPageCount(doc.numPages)} loading="Loading PDF...">
+      <Document key={fileUrl} file={fileUrl} onLoadSuccess={(doc) => setPageCount(doc.numPages)} loading={t("viewer.loading")}>
         <div className="mx-auto flex max-w-4xl flex-col gap-6">
           {Array.from({ length: pageCount }, (_, idx) => {
             const pageNumber = idx + 1;
@@ -155,7 +157,7 @@ export function PdfViewer({
                 <Page pageNumber={pageNumber} width={renderWidth} renderTextLayer={false} renderAnnotationLayer={false} />
                 <button
                   type="button"
-                  aria-label="page-hit-area"
+                  aria-label={t("viewer.hitArea")}
                   className={cn("absolute left-2 top-2 h-full w-full", addTextMode ? "cursor-copy" : "cursor-default")}
                   onClick={(event) => {
                     if (!addTextMode) {

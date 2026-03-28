@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useI18n } from "@/lib/i18n";
 import type { BlockRect, EditorDraft, TextBlock } from "@/types/pdf";
 
 type BlockEditorProps = {
@@ -45,6 +46,7 @@ export function BlockEditor({
   const [font, setFont] = useState("Helvetica");
   const [fontSize, setFontSize] = useState(11);
   const [bold, setBold] = useState(false);
+  const { t } = useI18n();
 
   useEffect(() => {
     if (!block) {
@@ -84,38 +86,38 @@ export function BlockEditor({
     <Card className="h-[calc(100vh-220px)] overflow-auto p-5">
       <div className="space-y-4">
         <div>
-          <h3 className="text-lg font-semibold text-text">Block Properties</h3>
-          <p className="text-sm text-slate-600">Select highlighted text block on the page to edit.</p>
+          <h3 className="text-lg font-semibold text-text">{t("editor.title")}</h3>
+          <p className="text-sm text-slate-600">{t("editor.subtitle")}</p>
         </div>
 
         <div className="flex flex-wrap gap-2">
           <Button type="button" variant={addTextMode ? "default" : "secondary"} onClick={onToggleAddTextMode}>
-            {addTextMode ? "Click page to place text" : "Add text"}
+            {addTextMode ? t("editor.addTextMode") : t("editor.addText")}
           </Button>
           <Button variant="ghost" onClick={onDownload}>
-            Download PDF
+            {t("editor.download")}
           </Button>
         </div>
 
         {block ? (
           <>
             <div className="space-y-2">
-              <Label>Original text</Label>
+              <Label>{t("editor.original")}</Label>
               <Textarea value={originalText} readOnly className="min-h-[90px]" />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="new-text">New text</Label>
+              <Label htmlFor="new-text">{t("editor.new")}</Label>
               <Textarea id="new-text" value={text} onChange={(event) => setText(event.target.value)} />
-              <p className="text-xs text-slate-500">Use `**text**` to make part of the text bold.</p>
+              <p className="text-xs text-slate-500">{t("editor.boldHint")}</p>
             </div>
 
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
               <div className="space-y-2">
-                <Label>Font family</Label>
+                <Label>{t("editor.fontFamily")}</Label>
                 <Select value={font} onValueChange={setFont}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select font" />
+                    <SelectValue placeholder={t("editor.fontFamily")} />
                   </SelectTrigger>
                   <SelectContent>
                     {FONT_OPTIONS.map((option) => (
@@ -128,7 +130,7 @@ export function BlockEditor({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="font-size">Font size</Label>
+                <Label htmlFor="font-size">{t("editor.fontSize")}</Label>
                 <Input
                   id="font-size"
                   type="number"
@@ -147,11 +149,11 @@ export function BlockEditor({
                 onChange={(event) => setBold(event.target.checked)}
                 className="h-4 w-4 accent-blue-600"
               />
-              Bold all text
+              {t("editor.boldAll")}
             </label>
 
             <div className="rounded-xl border border-white/40 bg-white/55 p-3">
-              <Label>Block scale</Label>
+              <Label>{t("editor.scale")}</Label>
               <div className="mt-2 flex gap-2">
                 <Button type="button" variant="secondary" onClick={() => onScaleRect(0.9)}>
                   -10%
@@ -160,7 +162,7 @@ export function BlockEditor({
                   +10%
                 </Button>
               </div>
-              <p className="mt-2 text-xs text-slate-500">Drag box in preview or use corner handles for resize.</p>
+              <p className="mt-2 text-xs text-slate-500">{t("editor.scaleHint")}</p>
             </div>
 
             <div className="flex flex-wrap gap-2">
@@ -169,10 +171,10 @@ export function BlockEditor({
                 disabled={saving || !text.trim()}
                 className="min-w-[140px]"
               >
-                {saving ? "Applying..." : "Apply change"}
+                {saving ? t("editor.applying") : t("editor.apply")}
               </Button>
               <Button variant="danger" onClick={onDelete} disabled={saving}>
-                Delete block
+                {t("editor.delete")}
               </Button>
               <Button
                 variant="secondary"
@@ -186,13 +188,13 @@ export function BlockEditor({
                   }
                 }}
               >
-                Reset block
+                {t("editor.reset")}
               </Button>
             </div>
 
             {!!warnings.length && (
               <div className="space-y-2 rounded-xl border border-amber-300/70 bg-amber-100/65 p-3">
-                <Badge className="bg-amber-200/70">Warnings</Badge>
+                <Badge className="bg-amber-200/70">{t("editor.warnings")}</Badge>
                 {warnings.map((warning) => (
                   <p className="text-sm text-amber-900" key={warning}>
                     {warning}
@@ -202,9 +204,7 @@ export function BlockEditor({
             )}
           </>
         ) : (
-          <p className="rounded-xl border border-dashed border-white/50 bg-white/40 p-4 text-sm text-slate-600">
-            No block selected. Click any highlighted text area in the PDF viewer.
-          </p>
+          <p className="rounded-xl border border-dashed border-white/50 bg-white/40 p-4 text-sm text-slate-600">{t("editor.noBlock")}</p>
         )}
       </div>
     </Card>
